@@ -4,9 +4,10 @@ AndroidHttpTools
 a simple HTTP request tools,support get,post,post with files
 
 
-///////////////////////////////////////////////////////////////
+
 //------------------------Sample Code------------------------//
-///////////////////////////////////////////////////////////////
+
+
 	String url = "http://www.baidu.com/";
 
 	private void requestData() {
