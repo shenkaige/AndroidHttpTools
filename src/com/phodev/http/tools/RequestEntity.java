@@ -26,7 +26,6 @@ import com.phodev.http.tools.ConnectionHelper.RequestReceiver;
  * 请求实例
  * 
  * @author sky
- * 
  */
 public class RequestEntity {
 	private String url;
@@ -43,17 +42,18 @@ public class RequestEntity {
 
 	}
 
-	public RequestEntity(String url, RequestMethod method) {
-		this.url = url;
-		this.requestMethod = method;
+	private RequestEntity(String url, RequestMethod method) {
+		url(url);
+		method(method);
 	}
 
 	public String getUrl() {
 		return url;
 	}
 
-	public void setUrl(String url) {
+	public RequestEntity url(String url) {
 		this.url = url;
+		return this;
 	}
 
 	/**
@@ -70,25 +70,30 @@ public class RequestEntity {
 	 * 
 	 * @return
 	 */
-	public void setPostEntitiy(HttpEntity entity) {
+	public RequestEntity setPostEntitiy(HttpEntity entity) {
 		postEntity = entity;
+		return this;
 	}
 
-	public void setPostEntitiy(List<NameValuePair> postValues) {
+	public RequestEntity setPostEntitiy(List<NameValuePair> postValues) {
 		setPostEntitiy(postValues, defCharset);
+		return this;
 	}
 
-	public void setPostEntitiy(List<NameValuePair> postValues, String charset) {
+	public RequestEntity setPostEntitiy(List<NameValuePair> postValues,
+			String charset) {
 		try {
 			postEntity = new UrlEncodedFormEntity(postValues, charset);
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}
+		return this;
 	}
 
-	public void setPostEntitiy(List<NameValuePair> postValues,
+	public RequestEntity setPostEntitiy(List<NameValuePair> postValues,
 			Map<String, File> files) {
 		setPostEntitiy(postValues, defCharset, files);
+		return this;
 	}
 
 	/**
@@ -102,8 +107,8 @@ public class RequestEntity {
 	 * @param files
 	 * @param charset
 	 */
-	public void setPostEntitiy(List<NameValuePair> postValues, String charset,
-			Map<String, File> files) {
+	public RequestEntity setPostEntitiy(List<NameValuePair> postValues,
+			String charset, Map<String, File> files) {
 		Charset c = null;
 		try {
 			c = Charset.forName(charset);
@@ -135,30 +140,40 @@ public class RequestEntity {
 				entity.addPart(entry.getKey(), new FileBody(entry.getValue()));
 			}
 		}
+		return this;
 	}
 
-	public void setPostEntitiy(String querryString, String charset) {
+	public RequestEntity setPostEntitiy(String querryString, String charset) {
 		try {
 			postEntity = new StringEntity(querryString, charset);
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}
+		return this;
 	}
 
 	protected RequestReceiver getRequestReceiver() {
 		return requestReceiver;
 	}
 
-	protected void setRequestReceiver(RequestReceiver receiver) {
+	/**
+	 * Http Reqeust Receiver
+	 * 
+	 * @param receiver
+	 * @return
+	 */
+	protected RequestEntity requestReceiver(RequestReceiver receiver) {
 		this.requestReceiver = receiver;
+		return this;
 	}
 
 	public String getRawResponse() {
 		return rawResponse;
 	}
 
-	protected void setRawResponse(String rawResponse) {
+	protected RequestEntity setRawResponse(String rawResponse) {
 		this.rawResponse = rawResponse;
+		return this;
 	}
 
 	/**
@@ -173,38 +188,45 @@ public class RequestEntity {
 	/**
 	 * Get,Post
 	 * 
+	 * @param method
+	 *            {@link RequestMethod}
 	 * @return
 	 */
-	public void setMethod(RequestMethod method) {
+	public RequestEntity method(RequestMethod method) {
 		this.requestMethod = method;
+		return this;
 	}
 
 	public int getResultCode() {
 		return resultCode;
 	}
 
-	protected void setResultCode(int resultCode) {
+	protected RequestEntity setResultCode(int resultCode) {
 		this.resultCode = resultCode;
+		return this;
 	}
 
 	public int getRequestId() {
 		return requestId;
 	}
 
-	protected void setRequestId(int requestId) {
+	public RequestEntity requestId(int requestId) {
 		this.requestId = requestId;
+		return this;
 	}
 
 	public String getDefaultCharset() {
 		return defCharset;
 	}
 
-	public void setDefaultCharset(String charset) {
+	public RequestEntity setDefaultCharset(String charset) {
 		this.defCharset = charset;
+		return this;
 	}
 
-	public void setTag(Object tag) {
+	public RequestEntity setTag(Object tag) {
 		mTag = tag;
+		return this;
 	}
 
 	public Object getTag() {
