@@ -132,9 +132,9 @@ public class ConnectionHelper {
 	 */
 	public long httpGet(String url, int requestId, RequestReceiver rr) {
 		RequestEntity entity = RequestEntity.obtain();
-		entity.url(url).requestReceiver(rr).method(RequestMethod.GET)
+		entity.url(url).receiver(rr).method(RequestMethod.GET)
 				.requestId(requestId);
-		return httpExecute(entity);
+		return execute(entity);
 	}
 
 	public long httpPost(String url, int requestId,
@@ -155,9 +155,9 @@ public class ConnectionHelper {
 	public long httpPost(String url, int requestId,
 			List<NameValuePair> postValues, String charset, RequestReceiver rr) {
 		RequestEntity entity = RequestEntity.obtain();
-		entity.url(url).requestReceiver(rr).setPostEntitiy(postValues, charset)
+		entity.url(url).receiver(rr).setPostEntitiy(postValues, charset)
 				.method(RequestMethod.POST).requestId(requestId);
-		return httpExecute(entity);
+		return execute(entity);
 	}
 
 	public long httpPost(String url, int requestId, String queryString,
@@ -178,11 +178,11 @@ public class ConnectionHelper {
 			String charset, RequestReceiver rr) {
 		RequestEntity entity = RequestEntity.obtain();
 		entity.url(url);
-		entity.requestReceiver(rr);
+		entity.receiver(rr);
 		entity.setPostEntitiy(queryString, charset);
 		entity.method(RequestMethod.POST);
 		entity.requestId(requestId);
-		return httpExecute(entity);
+		return execute(entity);
 	}
 
 	public long httpPost(String url, int requestId,
@@ -205,16 +205,16 @@ public class ConnectionHelper {
 			Map<String, File> files, RequestReceiver rr) {
 		RequestEntity entity = RequestEntity.obtain();
 		entity.url(url);
-		entity.requestReceiver(rr);
+		entity.receiver(rr);
 		entity.setPostEntitiy(postValues, charset, files);
 		entity.method(RequestMethod.POST_WITH_FILE);
 		entity.requestId(requestId);
-		return httpExecute(entity);
+		return execute(entity);
 	}
 
 	private Map<Long, RequestEntity> mRequestRecords = new HashMap<Long, RequestEntity>();
 
-	private long httpExecute(RequestEntity entity) {
+	public long execute(RequestEntity entity) {
 		ConnectionTask task = obtainConnectionTask(entity);
 		entity.setRequestTaskFuture(executor.submit(task));
 		synchronized (mRequestRecords) {

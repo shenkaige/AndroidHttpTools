@@ -178,7 +178,7 @@ public class RequestEntity {
 	 * @param receiver
 	 * @return
 	 */
-	protected RequestEntity requestReceiver(RequestReceiver receiver) {
+	protected RequestEntity receiver(RequestReceiver receiver) {
 		this.requestReceiver = receiver;
 		return this;
 	}
