@@ -51,23 +51,22 @@ public class RequestEntity {
 	private RequestMethod requestMethod;
 	private int resultCode;
 	private int requestId;
-	private String defCharset;
+	private String curstomCharset;
 	private Object mTag;
 
 	private RequestEntity() {
-
 	}
 
 	private RequestEntity(String url, RequestMethod method) {
-		url(url);
-		method(method);
+		setUrl(url);
+		setMethod(method);
 	}
 
 	public String getUrl() {
 		return url;
 	}
 
-	public RequestEntity url(String url) {
+	public RequestEntity setUrl(String url) {
 		this.url = url;
 		return this;
 	}
@@ -92,7 +91,7 @@ public class RequestEntity {
 	}
 
 	public RequestEntity setPostEntitiy(List<NameValuePair> postValues) {
-		setPostEntitiy(postValues, defCharset);
+		setPostEntitiy(postValues, ConnectionHelper.DEFAULT_CHARSET_STR);
 		return this;
 	}
 
@@ -108,7 +107,7 @@ public class RequestEntity {
 
 	public RequestEntity setPostEntitiy(List<NameValuePair> postValues,
 			Map<String, File> files) {
-		setPostEntitiy(postValues, defCharset, files);
+		setPostEntitiy(postValues, ConnectionHelper.DEFAULT_CHARSET_STR, files);
 		return this;
 	}
 
@@ -128,6 +127,7 @@ public class RequestEntity {
 		Charset c = null;
 		try {
 			c = Charset.forName(charset);
+			Charset.defaultCharset();
 		} catch (Exception e) {
 			c = null;
 		}
@@ -178,7 +178,7 @@ public class RequestEntity {
 	 * @param receiver
 	 * @return
 	 */
-	protected RequestEntity receiver(RequestReceiver receiver) {
+	protected RequestEntity setReceiver(RequestReceiver receiver) {
 		this.requestReceiver = receiver;
 		return this;
 	}
@@ -208,7 +208,7 @@ public class RequestEntity {
 	 *            {@link RequestMethod}
 	 * @return
 	 */
-	public RequestEntity method(RequestMethod method) {
+	public RequestEntity setMethod(RequestMethod method) {
 		this.requestMethod = method;
 		return this;
 	}
@@ -226,18 +226,16 @@ public class RequestEntity {
 		return requestId;
 	}
 
-	public RequestEntity requestId(int requestId) {
+	public RequestEntity setRequestId(int requestId) {
 		this.requestId = requestId;
 		return this;
 	}
 
-	public String getDefaultCharset() {
-		return defCharset;
-	}
-
-	public RequestEntity setDefaultCharset(String charset) {
-		this.defCharset = charset;
-		return this;
+	public String getCurrentCharset() {
+		if (curstomCharset == null || curstomCharset.length() == 0) {
+			return ConnectionHelper.DEFAULT_CHARSET_STR;
+		}
+		return curstomCharset;
 	}
 
 	public RequestEntity setTag(Object tag) {
@@ -323,7 +321,7 @@ public class RequestEntity {
 		rawResponse = null;
 		requestMethod = null;
 		resultCode = 0;
-		defCharset = null;
+		curstomCharset = null;
 		isCanceled = false;
 		isCancelStateSend = false;
 		requestHandler = makeNextRequestIndex();

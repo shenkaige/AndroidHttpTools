@@ -17,6 +17,7 @@ package com.phodev.http.tools;
  * limitations under the License.
  */
 import java.io.File;
+import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -77,6 +78,9 @@ public class ConnectionHelper {
 	final static ThreadPoolExecutor executor = new ThreadPoolExecutor(
 			MAX_CORE_POOL_SIZE, Integer.MAX_VALUE, KEEP_ALIVE_TIME,
 			TimeUnit.SECONDS, new SynchronousQueue<Runnable>());
+	public static final String DEFAULT_CHARSET_STR = "UTF-8";
+	public static final Charset DEFAULT_CHARSET = Charset
+			.forName(DEFAULT_CHARSET_STR);
 	//
 	private HttpClient httpClient;
 
@@ -132,15 +136,14 @@ public class ConnectionHelper {
 	 */
 	public long httpGet(String url, int requestId, RequestReceiver rr) {
 		RequestEntity entity = RequestEntity.obtain();
-		entity.url(url).receiver(rr).method(RequestMethod.GET)
-				.requestId(requestId);
+		entity.setUrl(url).setReceiver(rr).setMethod(RequestMethod.GET)
+				.setRequestId(requestId);
 		return execute(entity);
 	}
 
 	public long httpPost(String url, int requestId,
 			List<NameValuePair> postValues, RequestReceiver rr) {
-		String n = null;
-		return httpPost(url, requestId, postValues, n, rr);
+		return httpPost(url, requestId, postValues, DEFAULT_CHARSET_STR, rr);
 	}
 
 	/**
@@ -155,14 +158,14 @@ public class ConnectionHelper {
 	public long httpPost(String url, int requestId,
 			List<NameValuePair> postValues, String charset, RequestReceiver rr) {
 		RequestEntity entity = RequestEntity.obtain();
-		entity.url(url).receiver(rr).setPostEntitiy(postValues, charset)
-				.method(RequestMethod.POST).requestId(requestId);
+		entity.setUrl(url).setReceiver(rr).setPostEntitiy(postValues, charset)
+				.setMethod(RequestMethod.POST).setRequestId(requestId);
 		return execute(entity);
 	}
 
 	public long httpPost(String url, int requestId, String queryString,
 			RequestReceiver rr) {
-		return httpPost(url, requestId, queryString, null, rr);
+		return httpPost(url, requestId, queryString, DEFAULT_CHARSET_STR, rr);
 	}
 
 	/**
@@ -177,18 +180,19 @@ public class ConnectionHelper {
 	public long httpPost(String url, int requestId, String queryString,
 			String charset, RequestReceiver rr) {
 		RequestEntity entity = RequestEntity.obtain();
-		entity.url(url);
-		entity.receiver(rr);
+		entity.setUrl(url);
+		entity.setReceiver(rr);
 		entity.setPostEntitiy(queryString, charset);
-		entity.method(RequestMethod.POST);
-		entity.requestId(requestId);
+		entity.setMethod(RequestMethod.POST);
+		entity.setRequestId(requestId);
 		return execute(entity);
 	}
 
 	public long httpPost(String url, int requestId,
 			List<NameValuePair> postValues, Map<String, File> files,
 			RequestReceiver rr) {
-		return httpPost(url, requestId, postValues, null, files, rr);
+		return httpPost(url, requestId, postValues, DEFAULT_CHARSET_STR, files,
+				rr);
 	}
 
 	/**
@@ -204,11 +208,11 @@ public class ConnectionHelper {
 			List<NameValuePair> postValues, String charset,
 			Map<String, File> files, RequestReceiver rr) {
 		RequestEntity entity = RequestEntity.obtain();
-		entity.url(url);
-		entity.receiver(rr);
+		entity.setUrl(url);
+		entity.setReceiver(rr);
 		entity.setPostEntitiy(postValues, charset, files);
-		entity.method(RequestMethod.POST_WITH_FILE);
-		entity.requestId(requestId);
+		entity.setMethod(RequestMethod.POST_WITH_FILE);
+		entity.setRequestId(requestId);
 		return execute(entity);
 	}
 
@@ -216,10 +220,10 @@ public class ConnectionHelper {
 
 	public long execute(RequestEntity entity) {
 		ConnectionTask task = obtainConnectionTask(entity);
-		entity.setRequestTaskFuture(executor.submit(task));
 		synchronized (mRequestRecords) {
 			mRequestRecords.put(entity.getRequestHandler(), entity);
 		}
+		entity.setRequestTaskFuture(executor.submit(task));
 		// executor.execute(obtainConnectionTask(entity));
 		return entity.getRequestHandler();
 	}
@@ -330,7 +334,7 @@ public class ConnectionHelper {
 				statusCode = response.getStatusLine().getStatusCode();
 				if (statusCode == HttpStatus.SC_OK) {
 					rEntity.setRawResponse(EntityUtils.toString(
-							response.getEntity(), rEntity.getDefaultCharset()));
+							response.getEntity(), rEntity.getCurrentCharset()));
 					customResultCode = RequestReceiver.RESULT_STATE_OK;
 				} else {
 					customResultCode = RequestReceiver.RESULT_STATE_NETWORK_ERROR;
