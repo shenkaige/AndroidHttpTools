@@ -57,6 +57,8 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 
+import com.phodev.http.tools.receivers.ParasiticRequestReceiver;
+
 /**
  * 网络请求数据封装
  * 
@@ -359,6 +361,12 @@ public class ConnectionHelper {
 			if (DEBUG) {
 				reportRequestEntity(rEntity, statusCode);
 			}
+			RequestReceiver rr = rEntity.getRequestReceiver();
+			if (rr instanceof ParasiticRequestReceiver) {
+				((ParasiticRequestReceiver) rr).parasiticHandler(
+						rEntity.getResultCode(), rEntity.getRequestId(),
+						rEntity.getTag(), rEntity.getRawResponse());
+			}
 			synchronized (this) {
 				if (!isInterrupted) {
 					synchronized (rEntity) {
@@ -456,25 +464,6 @@ public class ConnectionHelper {
 	@Override
 	protected void finalize() throws Throwable {
 		shutdownConnection();
-	}
-
-	public interface RequestReceiver {
-		public static final int RESULT_STATE_OK = 0;
-		public static final int RESULT_STATE_SERVER_ERROR = -1;
-		public static final int RESULT_STATE_NETWORK_ERROR = -2;
-		public static final int RESULT_STATE_TIME_OUT = -3;
-
-		public void onResult(int resultCode, int reqId, Object tag, String resp);
-
-		public void onRequestCanceled(int reqId, Object tag);
-	}
-
-	public abstract static class SimpleReqeustReceiver implements
-			RequestReceiver {
-		@Override
-		public void onRequestCanceled(int reqId, Object tag) {
-
-		}
 	}
 
 	// public interface HttpTask extends Runnable {

@@ -36,7 +36,6 @@ import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.entity.mime.content.StringBody;
 
 import com.phodev.http.tools.ConnectionHelper.RequestMethod;
-import com.phodev.http.tools.ConnectionHelper.RequestReceiver;
 
 /**
  * 请求实例
